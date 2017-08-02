@@ -77,6 +77,7 @@ cc.Class({
             }
         }, this)
         net.on('room_result', (data) => {
+            cc.find('Canvas/call').active = false
             for (let i in this.data.users) {
                 let cChatId = (this.data.users[i].pos - this.myChatId + 5) % 5
                 this.showCard(cChatId, data.users[i].poker)
@@ -86,7 +87,7 @@ cc.Class({
             GameData.roomData.time++
             this.roomTime = GameData.roomData.time + ':' + GameData.roomData.allTime
             setTimeout(() => {
-                cc.find('Canvas/win/roundWin').true = true
+                cc.find('Canvas/win/roundWin').active = true
                 cc.find('Canvas/win/roundWin/Layout').removeAllChildren()
                 for (let k in this.data.users) {
                     let node = new cc.Node()
