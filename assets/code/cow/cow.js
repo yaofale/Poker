@@ -1,5 +1,5 @@
-cc.Class({ 
-    extends: cc.Component,  
+cc.Class({
+    extends: cc.Component,
 
     properties: {
         poker: cc.SpriteAtlas,
@@ -8,7 +8,7 @@ cc.Class({
 
         btReady: cc.Node,
         spineNode: cc.Node,
-        pokeNode: [cc.Node],  
+        pokeNode: [cc.Node],
         time: cc.Label,
         roomId: cc.Label,
         roomTime: cc.Label
@@ -23,7 +23,7 @@ cc.Class({
             4: cc.find('Canvas/pos/other4')
         }
         this.roomId.string = GameData.roomData.roomId
-        this.roomTime = GameData.roomData.time + ':' + GameData.roomData.allTime
+        this.roomTime.string = GameData.roomData.time + ':' + GameData.roomData.allTime
         this.data = GameData.roomData
         this.myChatId = this.data.users[GameData.uId].pos
         if (GameData.roomData) {
@@ -82,10 +82,12 @@ cc.Class({
                 let cChatId = (this.data.users[i].pos - this.myChatId + 5) % 5
                 this.showCard(cChatId, data.users[i].poker)
                 this.showNiu(cChatId, data.users[i].pokerType)
+                this.showSound(data.users[i].pokerType)
             }
+
             //判断是否结束
             GameData.roomData.time++
-            this.roomTime = GameData.roomData.time + ':' + GameData.roomData.allTime
+            this.roomTime.string = GameData.roomData.time + ':' + GameData.roomData.allTime
             setTimeout(() => {
                 cc.find('Canvas/win/roundWin').active = true
                 cc.find('Canvas/win/roundWin/Layout').removeAllChildren()
@@ -96,7 +98,7 @@ cc.Class({
                     node.parent = cc.find('Canvas/win/roundWin/Layout')
                 }
 
-            },1000)
+            }, 1000)
             setTimeout(() => {
                 cc.find('Canvas/win/roundWin').active = false
                 if (GameData.roomData.time >= GameData.roomData.allTime) {
@@ -204,4 +206,23 @@ cc.Class({
         net.off('room_result', this)
         net.off('room_mumultiplebroadcast', this)
     },
+    showSound(id) {
+        let niu = [100, 101, 102, 103, 104, 105, 106, 207, 208, 209, 310, 414, 411, 412, 415, 413, 416, 417]
+        cc.loader.loadRes('Sound/niu_1_'+niu[id], (err, res) => {
+            cc.find('Canvas/sound').getComponent(cc.AudioSource).clip = res
+            cc.find('Canvas/sound').getComponent(cc.AudioSource).play()
+        })
+    },
+    showTopB(){
+        cc.find('Canvas/topbar').active = false
+        cc.find('Canvas/topbarU').active = true
+    },
+    showTop(){
+        cc.find('Canvas/topbar').active = true
+        cc.find('Canvas/topbarU').active = false
+    },
+    leaveRoom(){
+        net.send('Room_leave')
+        cc.director.loadScene('main')
+    }
 })
